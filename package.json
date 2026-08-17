@@ -1,0 +1,21 @@
+{
+  "name": "panela-de-pressao",
+  "version": "3.1.0",
+  "description": "Jogo de cartas social multiplayer para navegador - perguntas, cartas com raridade e efeitos, Pressão, minigames, perguntas da galera, reconexão e chat de voz via WebRTC.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test:unit": "node test/unit-v2-test.js && node test/unit-v3-test.js",
+    "test:integration": "node test/integration-v2-test.js && node test/integration-v3-test.js && node test/integration-voice-test.js",
+    "test": "npm run test:unit && npm run test:integration"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.7.5"
+  }
+}

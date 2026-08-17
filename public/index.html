@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Panela de Pressão</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="grain-overlay"></div>
+  <div id="toast" class="toast hidden"></div>
+  <button id="btn-mute" class="btn-mute" type="button" title="Ligar/desligar som">🔊</button>
+
+  <button id="btn-voice-toggle" class="btn-voice-toggle hidden" type="button" title="Chat de voz">🎙️</button>
+  <div id="voice-panel" class="voice-panel hidden">
+    <div class="voice-panel-header">
+      <span>🎙️ Chat de voz</span>
+      <span id="voice-count" class="voice-count">0 conectados</span>
+    </div>
+
+    <button id="btn-voice-join" class="btn btn-secondary" type="button">Entrar no chat de voz</button>
+    <button id="btn-voice-leave" class="btn btn-ghost hidden" type="button">Sair do chat de voz</button>
+
+    <label class="voice-ptt-toggle">
+      <input type="checkbox" id="voice-ptt-checkbox" />
+      Push-to-talk (segurar pra falar, em vez de microfone sempre aberto)
+    </label>
+
+    <button id="btn-voice-mic" class="btn-voice-mic hidden" type="button">🎤 Segure para falar</button>
+
+    <ul id="voice-participants-list" class="voice-participants-list"></ul>
+    <p class="voice-hint">O áudio é direto entre navegadores (WebRTC) — o servidor não escuta nem grava nada.</p>
+  </div>
+
+  <!-- ===================== TELA 1: INICIAL ===================== -->
+  <section id="screen-home" class="screen active">
+    <div class="card home-card">
+      <h1 class="logo">PANELA <span>DE PRESSÃO</span></h1>
+      <p class="subtitle">Ler → rir → apontar → ver a desgraça acontecer.</p>
+
+      <div class="field">
+        <label for="input-name">Seu nome</label>
+        <input id="input-name" type="text" maxlength="18" placeholder="Como te chamamos?" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label>Seu avatar</label>
+        <div id="avatar-color-picker" class="avatar-picker-row"></div>
+        <div id="avatar-emoji-picker" class="avatar-picker-row"></div>
+      </div>
+
+      <div class="home-actions">
+        <div class="action-block">
+          <button id="btn-create" class="btn btn-primary">Criar sala</button>
+        </div>
+        <div class="divider"><span>ou</span></div>
+        <div class="action-block">
+          <input id="input-code" type="text" maxlength="4" placeholder="CÓDIGO DA SALA" class="code-input" autocomplete="off" />
+          <button id="btn-join" class="btn btn-secondary">Entrar na sala</button>
+        </div>
+      </div>
+
+      <p id="home-error" class="error-text hidden"></p>
+    </div>
+  </section>
+
+  <!-- ===================== TELA 2: LOBBY ===================== -->
+  <section id="screen-lobby" class="screen">
+    <div class="card lobby-card">
+      <div class="lobby-header">
+        <div>
+          <p class="label">Código da sala</p>
+          <div class="room-code-display" id="lobby-room-code">----</div>
+        </div>
+        <button id="btn-copy-link" class="btn btn-ghost" type="button">🔗 Convidar</button>
+      </div>
+
+      <h2 class="section-title">Jogadores <span id="lobby-count">(0)</span></h2>
+      <ul id="lobby-players" class="player-list"></ul>
+
+      <div id="lobby-config" class="config-panel">
+        <h2 class="section-title">Configuração da partida</h2>
+
+        <div class="config-row">
+          <p class="config-label">Modo</p>
+          <div class="config-options" data-config-key="mode">
+            <button type="button" data-value="basico">🟢 Básico</button>
+            <button type="button" data-value="caotico">🟠 Caótico</button>
+            <button type="button" data-value="sem-filtro">🔴 Sem Filtro</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Pontos para vencer</p>
+          <div class="config-options" data-config-key="winScore">
+            <button type="button" data-value="3">3</button>
+            <button type="button" data-value="5">5</button>
+            <button type="button" data-value="7">7</button>
+            <button type="button" data-value="10">10</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Cartas especiais</p>
+          <div class="config-options" data-config-key="specialCardsFrequency">
+            <button type="button" data-value="off">Off</button>
+            <button type="button" data-value="poucas">Poucas</button>
+            <button type="button" data-value="normal">Normal</button>
+            <button type="button" data-value="muitas">Muitas</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Pressão</p>
+          <div class="config-options" data-config-key="pressureLevel">
+            <button type="button" data-value="off">Off</button>
+            <button type="button" data-value="normal">Normal</button>
+            <button type="button" data-value="alta">Alta</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Minigames</p>
+          <div class="config-options" data-config-key="minigameInterval">
+            <button type="button" data-value="0">Desligado</button>
+            <button type="button" data-value="3">a cada 3</button>
+            <button type="button" data-value="5">a cada 5</button>
+            <button type="button" data-value="7">a cada 7</button>
+            <button type="button" data-value="10">a cada 10</button>
+            <button type="button" data-value="random">Aleatório</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Tempo de votação</p>
+          <div class="config-options" data-config-key="voteTimeLimitSec">
+            <button type="button" data-value="0">Sem limite</button>
+            <button type="button" data-value="10">10s</button>
+            <button type="button" data-value="15">15s</button>
+            <button type="button" data-value="20">20s</button>
+            <button type="button" data-value="30">30s</button>
+            <button type="button" data-value="60">60s</button>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <p class="config-label">Perguntas da galera</p>
+          <div class="config-options" data-config-key="customQuestionsEnabled">
+            <button type="button" data-value="true">ON</button>
+            <button type="button" data-value="false">OFF</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="custom-questions-panel" class="custom-questions-panel hidden">
+        <h2 class="section-title">✏️ Perguntas da galera <span id="custom-questions-count">(0)</span></h2>
+        <div class="custom-question-form">
+          <input id="input-custom-question" type="text" maxlength="140" placeholder="Quem provavelmente..." autocomplete="off" />
+          <button id="btn-submit-custom-question" class="btn btn-secondary" type="button">Enviar</button>
+        </div>
+        <ul id="custom-questions-list" class="custom-questions-list"></ul>
+      </div>
+
+      <p id="lobby-hint" class="hint-text">Aguardando o anfitrião iniciar a partida...</p>
+      <button id="btn-start-game" class="btn btn-primary hidden" type="button">Iniciar partida</button>
+    </div>
+  </section>
+
+  <!-- ===================== TELA 3: JOGO ===================== -->
+  <section id="screen-game" class="screen">
+    <div class="game-wrap">
+      <div class="hud-bar">
+        <div class="hud-chip">RODADA <span id="hud-round-number">1</span></div>
+        <div class="hud-chip hud-panela">
+          🔥 <div class="panela-track"><div id="hud-panela-fill" class="panela-fill"></div></div>
+          <span id="hud-panela-pct">0%</span>
+        </div>
+        <div class="hud-chip hud-pressure hidden" id="hud-pressure"></div>
+        <div class="hud-chip hud-timer hidden" id="hud-timer">⏱ <span id="hud-timer-seconds">--</span>s</div>
+      </div>
+
+      <div class="hud-scoreboard" id="hud-scoreboard"></div>
+
+      <div class="question-card" id="game-question-card">
+        <div class="card-rarity-badge" id="game-rarity-badge">COMUM</div>
+        <p class="question-eyebrow">A carta é...</p>
+        <p class="question-text" id="game-question-text">Carregando carta...</p>
+        <p class="card-restriction hidden" id="game-restriction-note">👑 Só vale votar no líder nesta rodada!</p>
+      </div>
+
+      <div class="vote-players-grid" id="game-players-grid"></div>
+      <div class="floating-reactions" id="floating-reactions"></div>
+
+      <p class="voted-hint hidden" id="game-voted-hint">✅ Voto registrado! Aguardando os outros jogadores...</p>
+      <p class="voted-hint hint-dispensed hidden" id="game-dispensed-hint">😴 Você não tem ninguém pra votar nesta rodada.</p>
+
+      <div class="vote-progress-bar"><span id="game-vote-progress">0/0 votaram</span></div>
+
+      <div class="reaction-bar" id="reaction-bar"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TELA 4: RESULTADO ===================== -->
+  <section id="screen-result" class="screen">
+    <div class="card result-card">
+      <div class="card-rarity-badge" id="result-rarity-badge"></div>
+      <p class="result-question" id="result-question-text"></p>
+      <h2 class="result-winner" id="result-winner-text"></h2>
+      <p class="pressure-note hidden" id="result-pressure-note"></p>
+
+      <ul id="result-votes-list" class="result-list"></ul>
+
+      <div id="effect-panel" class="effect-panel hidden">
+        <p id="effect-narrative" class="effect-narrative"></p>
+        <div id="effect-choice-buttons" class="effect-choice-buttons hidden"></div>
+        <div id="effect-target-picker" class="effect-target-picker hidden"></div>
+        <p id="effect-waiting-text" class="hint-text hidden"></p>
+      </div>
+
+      <h3 class="section-title">Placar</h3>
+      <ul id="result-scoreboard" class="scoreboard-list"></ul>
+
+      <p class="next-round-timer" id="result-next-timer">Próxima em <span id="result-timer-seconds">6</span>s...</p>
+    </div>
+  </section>
+
+  <!-- ===================== TELA 5: MINIGAME ===================== -->
+  <section id="screen-minigame" class="screen">
+    <div class="card minigame-card">
+      <p class="minigame-eyebrow">⚡ INTERRUPÇÃO CAÓTICA ⚡</p>
+      <h2 class="minigame-title" id="minigame-title">Minigame</h2>
+      <p class="minigame-desc" id="minigame-desc"></p>
+
+      <div class="minigame-arena" id="minigame-arena">
+        <button id="minigame-crown-target" class="minigame-crown-target hidden" type="button">👑</button>
+        <div class="minigame-mash-wrap hidden" id="minigame-mash-wrap">
+          <button id="minigame-mash-button" class="minigame-mash-button" type="button">TOCA!</button>
+          <div class="minigame-mash-counter" id="minigame-mash-counter">0</div>
+        </div>
+        <button id="minigame-noclick-button" class="minigame-noclick-button hidden" type="button">NÃO CLIQUE</button>
+        <div id="minigame-targets-container" class="minigame-targets-container hidden"></div>
+        <div id="minigame-potato-indicator" class="minigame-potato-indicator hidden">
+          🥔 <span id="minigame-potato-holder-name">-</span>
+        </div>
+      </div>
+
+      <div id="minigame-result-panel" class="minigame-result-panel hidden">
+        <p id="minigame-result-text"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TELA 6: VITÓRIA ===================== -->
+  <section id="screen-victory" class="screen">
+    <div class="card victory-card">
+      <div class="confetti" id="confetti-container"></div>
+      <p class="trophy">👑</p>
+      <h2 class="victory-title"><span id="victory-winner-name">-</span> venceu a partida!</h2>
+
+      <ul id="victory-scoreboard" class="scoreboard-list"></ul>
+
+      <button id="btn-play-again" class="btn btn-primary hidden" type="button">Jogar novamente</button>
+      <p id="victory-wait-hint" class="hint-text hidden">Aguardando o anfitrião iniciar uma nova partida...</p>
+    </div>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
